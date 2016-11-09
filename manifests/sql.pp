@@ -22,16 +22,6 @@ class tse_sqlserver::sql (
       when => pending,
   }
 
-  if !defined(Service['wuauserv']){
-
-    service { 'wuauserv':
-      ensure => running,
-      enable => true,
-      before => Windowsfeature['Net-Framework-Core'],
-    }
-
-  }
-
   windowsfeature { 'Net-Framework-Core':
     ensure => present,
   }
