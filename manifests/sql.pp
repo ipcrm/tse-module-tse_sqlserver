@@ -53,8 +53,7 @@ class tse_sqlserver::sql (
   }
 
   sqlserver::config{ $db_instance:
-    admin_user => 'sa',
-    admin_pass => $sa_pass,
+    admin_login_type => 'WINDOWS_LOGIN',
   }
 
   windows_firewall::exception { 'Sql browser access':
