@@ -39,9 +39,9 @@ define tse_sqlserver::attachdb (
   }
 
   sqlserver_tsql{ "Change Owner of ${title}":
-    instance  => "${::hostname}\\${dbinstance}",
-    command   => "USE [${title}] ALTER AUTHORIZATION ON DATABASE::${title} TO ${owner};",
-    onlyif    => "select suser_sname(owner_sid) from sys.databases where [name] = ${title};",
+    instance  => $dbinstance,
+    command   => "USE [${title}] ALTER AUTHORIZATION ON DATABASE::${title} TO ${owner}",
+    onlyif    => "select suser_sname(owner_sid) from sys.databases where [name] = ${title}",
     subscribe => Exec["Attach ${title}"],
   }
 
