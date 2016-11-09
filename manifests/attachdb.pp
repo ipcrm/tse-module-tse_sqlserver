@@ -38,10 +38,10 @@ define tse_sqlserver::attachdb (
     onlyif   => "import-module \'${sqlps_path}\'; invoke-sqlcmd -Query \"select [name] from sys.databases where [name] = \'${title}\';\" -ServerInstance \"${::hostname}\\${dbinstance}\"| write-error",
   }
 
-  sqlserver_tsql{ "Change Owner of ${title}":
-    instance  => $dbinstance,
-    command   => "USE [${title}] ALTER AUTHORIZATION ON DATABASE::${title} TO ${owner}",
-    onlyif    => "select suser_sname(owner_sid) from sys.databases where [name] = ${title}",
+  exec { "Change owner of ${title}":
+    command   => "import-module \'${sqlps_path}\'; invoke-sqlcmd \"USE [${title}] ALTER AUTHORIZATION ON DATABASE::${title} TO ${owner};\" -QueryTimeout 3600 -username \'sa\' -password \'${::tse_sqlserver::sql::sa_pass}\' -ServerInstance \'${::hostname}\\${dbinstance}\'",
+    provider  => powershell,
+    onlyif    => "import-module \'${sqlps_path}\'; invoke-sqlcmd -Query \"select suser_sname(owner_sid) from sys.databases where [name] = \'${title}\';\" -ServerInstance \"$::hostname\\${dbinstance}\" | where-object \"Column1\" -eq \"${owner}\" | write-error",
     subscribe => Exec["Attach ${title}"],
   }
 
