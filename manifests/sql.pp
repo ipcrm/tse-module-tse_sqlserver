@@ -13,19 +13,26 @@ class tse_sqlserver::sql (
     '2014':  {
       $version_var  = 'MSSQL12'
     }
+    default: {
+      abort('Invalid sqlserver version supplied!')
+    }
   }
 
   reboot { 'before install':
       when => pending,
   }
 
-  service { 'wuauserv':	
-    ensure => running,		
-    enable => true,		
-    before => Windowsfeature['Net-Framework-Core'],		
-  }		
-		
-  windowsfeature { 'Net-Framework-Core':		
+  if !defined(Service['wuauserv']){
+
+    service { 'wuauserv':
+      ensure => running,
+      enable => true,
+      before => Windowsfeature['Net-Framework-Core'],
+    }
+
+  }
+
+  windowsfeature { 'Net-Framework-Core':
     ensure => present,
   }
 
@@ -57,9 +64,9 @@ class tse_sqlserver::sql (
     enabled      => 'yes',
     program      => 'C:\Program Files (x86)\Microsoft SQL Server\90\Shared\sqlbrowser.exe',
     display_name => 'MSSQL Browser',
-    description  => "MS SQL Server Browser Inbound Access, enabled by Puppet in $module_name",
+    description  => "MS SQL Server Browser Inbound Access, enabled by Puppet in ${module_name}",
   }
-  
+
   windows_firewall::exception { 'Sqlserver access':
     ensure       => present,
     direction    => 'in',
@@ -67,7 +74,7 @@ class tse_sqlserver::sql (
     enabled      => 'yes',
     program      => "C:\\Program Files\\Microsoft SQL Server\\${version_var}.${db_instance}\\MSSQL\\Binn\\sqlservr.exe",
     display_name => 'MSSQL Access',
-    description  => "MS SQL Server Inbound Access, enabled by Puppet in $module_name",
+    description  => "MS SQL Server Inbound Access, enabled by Puppet in ${module_name}",
   }
 
-} 
+}
