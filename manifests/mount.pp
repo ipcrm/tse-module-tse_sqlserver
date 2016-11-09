@@ -10,7 +10,7 @@ class tse_sqlserver::mount (
     source => "${iso_source}/${iso}",
   }
 
-  $iso_path = "${::staging::path}/${module_name}/${iso}"
+  $iso_path = "${::staging::path}\\${module_name}\\${iso}"
 
   acl { $iso_path :
     permissions => [
